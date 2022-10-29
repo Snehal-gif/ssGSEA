@@ -55,62 +55,29 @@ ssgsea = function(X, gene_sets, alpha = 0.25, scale = T, norm = F, single = T) {
   return(es)
 }
 
-library(org.Hs.eg.db)
-library(AnnotationDbi)
-
-#Read dataset
-data = readRDS("C:/Users/Admin/OneDrive/Documents/logC.rds")
-rownames(data)=make.names(data[,1],unique = TRUE)
-View(data)
-data = data[,-1]
-head(data)
-summary(data)
-
+data = readRDS("logcpm.RDS")
+data[1:5,1:5]
 data = as.matrix(data)
-data
-#Import the markers dataset
-gene_set = read.csv("C:/Users/Admin/OneDrive/Documents/markers2Sep.csv")
+head(data)
+
+gene_set = read.csv("markers2Sep.csv")
 head(gene_set)
 
-#Convert to list
 gene_sets = as.list(as.data.frame(gene_set))
 print("genes set ready")
 
-res=ssgsea(as.matrix(data), gene_sets, scale = TRUE, norm = FALSE)
-res1 = t(res)
-head(res1)
-mat = as.matrix(res1)
-for(i in 1:nrow(mat))
-{ 
-  vec = as.numeric(c(mat[i,]))
-  mat[i,1:ncol(mat)] = (vec-mean(vec))/sd(vec)
-  
-}
-View(mat)
-Heatmap(t(mat),col = colorRamp2(c(-2,0,2),c("red","white","blue")))
+res= ssgsea(data,gene_sets,scale = TRUE,norm = FALSE)
+res = t(res)
+head(res)
 
 
-system.time(assign('res', ssgsea(data, gene_sets, scale = TRUE, norm = FALSE)))
-
-
-#Use ssgea function 
-res = ssgsea(data, gene_sets, scale = TRUE, norm = FALSE)
-res
-
-#transpose the res
-res1 = t(res)
-head(res1)
-
-#Convert to matrix
-data1 = as.matrix(res1)
+data1 = as.matrix(res)
 for(i in 1:nrow(data1))
 { 
-  vec = as.numeric(c(mat[i,]))
+  vec = as.numeric(c(data1[i,]))
   data1[i,1:ncol(data1)] = (vec-mean(vec))/sd(vec)
   
 }
-
-#Plot the heatmap
-library(ComplexHeatmap)
-Heatmap(t(data1),col = colorRamp2(c(-2,0,2),c("green","Purple","orange")))
-
+#heatmap annotation
+library("")
+Heatmap(t(data1[,1:20]),col = colorRamp2(c(-2,0,2),c("green","Purple","orange")))
